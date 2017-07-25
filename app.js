@@ -11,7 +11,7 @@ const { Etcd3 } = require('etcd3'),
 
 const prefix = 'etcd3_naming';
 let serviceKey = null;
-let _client;
+let client = null;
 
 let stopSignal = false;
 
@@ -19,10 +19,9 @@ async function register(name, host, port, target, interval, ttl) {
     let serviceValue = util.format('%s:%d', host, port);
     serviceKey = util.format('/%s/%s/%s', prefix, name, serviceValue);
 
-    let client = new Etcd3({
+    client = new Etcd3({
         hosts: target.split(',')
     });
-    _client = client;
 
     let lease = client.lease();
     lease.on('lost', err => {
@@ -68,7 +67,7 @@ async function register(name, host, port, target, interval, ttl) {
 
 function unregistry() {
     stopSignal = true;
-    _client.delete().key(serviceKey)
+    client.delete().key(serviceKey)
         .then(() => {
             console.log('  ---> Service:%s is deleted.', serviceKey);
             process.exit(0);
