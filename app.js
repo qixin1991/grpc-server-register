@@ -8,6 +8,7 @@ const { Etcd3 } = require('etcd3'),
 // const client = new Etcd3({
 //     hosts: ['172.20.9.101:2379', '172.20.9.103:2379', '172.20.9.105:2379']
 // });
+
 const prefix = 'etcd3_naming';
 let serviceKey = null;
 let _client;
@@ -27,9 +28,10 @@ async function register(name, host, port, target, interval, ttl) {
     lease.on('lost', err => {
         console.error('  ---> We lost our lease as a result of this error:', err);
         console.log('Trying to re-registry it...');
-        register(name, host, port, target, interval, ttl);
+        // register(name, host, port, target, interval, ttl);
+        unregistry();
     });
-    let key = await client.get(serviceKey).string();
+    // let key = await client.get(serviceKey).string();
     let res = await lease.put(serviceKey).value(serviceValue);
     console.log('  ---> Res:', res);
     // let ticker = setInterval(() => {
@@ -95,7 +97,7 @@ async function main() {
     await register('hello_service', '172.20.241.105', 50051, '172.20.9.101:2379,172.20.9.103:2379,172.20.9.105:2379', 10, 15);
     let server = new grpc.Server();
     let port = process.env.NODE_PORT || 50051;
-    server.addService(rpc_proto.Greeter.service, { SayHello: sayHello, SayHelloAgain: sayHelloAgain });
+    server.addService(rpc_proto.Greeter.service, { sayHello: sayHello, sayHelloAgain: sayHelloAgain });
     server.bind(`172.20.241.105:${port}`, grpc.ServerCredentials.createInsecure());
     server.start();
     console.log(`  ---> Server is running on 172.20.241.105:${port}`);
