@@ -23,7 +23,8 @@ async function register(name, host, port, target, interval, ttl) {
         hosts: target.split(',')
     });
 
-    let lease = client.lease();
+    let lease = client.lease(ttl);
+    await lease.put(serviceKey).value(serviceValue);    
     lease.on('lost', err => {
         console.error('  ---> We lost our lease as a result of this error:', err);
         console.log('Trying to re-registry it...');
@@ -31,8 +32,6 @@ async function register(name, host, port, target, interval, ttl) {
         // unregistry();
     });
     // let key = await client.get(serviceKey).string();
-    let res = await lease.put(serviceKey).value(serviceValue);
-    console.log('  ---> Res:', res);
     // let ticker = setInterval(() => {
     //     try {
     //         let lease = client.lease();
