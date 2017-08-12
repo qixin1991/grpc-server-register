@@ -1,11 +1,15 @@
 {
   "name": "grpc-server-register",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "",
   "main": "./lib/register.js",
   "scripts": {
     "test": "node test.js",
     "start": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qixin1991/grpc-server-register.git"
   },
   "author": "",
   "license": "ISC",
